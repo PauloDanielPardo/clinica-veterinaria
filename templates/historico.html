@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Histórico de {{ animal.nome }}</h2>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">Voltar</a>
+    <a href="{{ url_for('editar_animal', id=animal.id) }}" class="btn btn-warning">Editar Animal</a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Informações do Animal</h5>
+        <p><strong>Espécie:</strong> {{ animal.especie }}</p>
+        <p><strong>Raça:</strong> {{ animal.raca or 'Não informada' }}</p>
+        <p><strong>Peso:</strong> {{ animal.peso }} kg</p>
+        <p><strong>Proprietário:</strong> {{ animal.proprietario_nome }}</p>
+    </div>
+</div>
+
+<h4>Serviços Realizados</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Data/Hora</th>
+            <th>Serviço</th>
+            <th>Preço</th>
+            <th>Observações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for historico in historicos %}
+        <tr>
+            <td>{{ historico.data.strftime('%d/%m/%Y %H:%M') }}</td>
+            <td>
+                <span title="{{ historico.servico.descricao }}" style="cursor: help; border-bottom: 1px dotted #666;">
+                    {{ historico.servico.tipo }}
+                </span>
+            </td>
+            <td>R$ {{ "%.2f"|format(historico.servico.preco) }}</td>
+            <td>{{ historico.observacoes or '-' }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4">Nenhum serviço registrado.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h4 class="mt-4">Registrar Novo Serviço</h4>
+<form method="POST" action="{{ url_for('novo_servico', animal_id=animal.id) }}">
+    <div class="mb-3">
+        <label class="form-label">Tipo de Serviço*</label>
+        <select class="form-select" name="servico_id" required>
+            <option value="">Selecione...</option>
+            {% for servico in servicos %}
+            <option value="{{ servico.id }}" title="{{ servico.descricao }}">
+                {{ servico.tipo }} (R$ {{ "%.2f"|format(servico.preco) }})
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Observações</label>
+        <textarea class="form-control" name="observacoes" rows="2"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Registrar</button>
+</form>
+{% endblock %}

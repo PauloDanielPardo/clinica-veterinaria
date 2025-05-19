@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Pacientes Cadastrados</h2>
+<a href="{{ url_for('novo_animal') }}" class="btn btn-success mb-3">+ Novo Animal</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Espécie</th>
+            <th>Raça</th>
+            <th>Peso (kg)</th>
+            <th>Proprietário</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for animal in animais %}
+        <tr>
+            <td>{{ animal.nome }}</td>
+            <td>{{ animal.especie }}</td>
+            <td>{{ animal.raca or '-' }}</td>
+            <td>{{ animal.peso }}</td>
+            <td>{{ animal.proprietario_nome }}</td>
+            <td>
+                <a href="{{ url_for('ver_animal', id=animal.id) }}" class="btn btn-sm btn-info">
+                    Histórico
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

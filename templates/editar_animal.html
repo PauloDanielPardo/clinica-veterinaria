@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="alert alert-{{ messages[0][0] }} mb-3">
+            {{ messages[0][1] }}
+        </div>
+    {% endif %}
+{% endwith %}
+<h2>Editar {{ animal.nome }}</h2>
+
+<form method="POST">
+    <div class="mb-3">
+        <label class="form-label">Nome*</label>
+        <input type="text" class="form-control" name="nome" value="{{ animal.nome }}" required>
+    </div>
+    
+    <div class="mb-3">
+        <label class="form-label">Espécie*</label>
+        <input type="text" class="form-control" name="especie" value="{{ animal.especie }}" required>
+    </div>
+    
+    <div class="mb-3">
+        <label class="form-label">Raça</label>
+        <input type="text" class="form-control" name="raca" value="{{ animal.raca or '' }}">
+    </div>
+    
+    <div class="mb-3">
+        <label class="form-label">Peso (kg)*</label>
+        <input 
+            type="number" 
+            step="0.1" 
+            class="form-control" 
+            name="peso" 
+            value="{{ animal.peso }}" 
+            required
+            min="0.1"  
+            oninput="validity.valid||(value='');"  
+        >
+    </div>
+    
+    <div class="mb-3">
+        <label class="form-label">Proprietário*</label>
+        <input type="text" class="form-control" name="proprietario_nome" value="{{ animal.proprietario_nome }}" required>
+    </div>
+    
+    <div class="mb-3">
+        <label class="form-label">Telefone</label>
+        <input 
+            type="text" 
+            class="form-control" 
+            name="proprietario_telefone" 
+            value="{{ animal.proprietario_telefone or '' }}"
+            required
+            maxlength="15"
+            placeholder="(00) 00000-0000"
+        >
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Salvar</button>
+    <a href="{{ url_for('ver_animal', id=animal.id) }}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}
