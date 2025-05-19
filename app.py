@@ -5,12 +5,10 @@ from flask import flash
 from dotenv import load_dotenv
 import os
 
-load_dotenv()  # Carrega variáveis do .env
+load_dotenv() 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')  # Lê do .env
-app = Flask(__name__)
-app.config['SECRET_KEY'] = '3a4b5c6d7e8f90123456789abcdef012'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///clinica.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
@@ -34,8 +32,28 @@ def validar_telefone(telefone):
 # ----- Rotas Principais -----
 @app.route('/')
 def index():
-    animais = Animal.query.all()
-    return render_template('index.html', animais=animais)
+    busca = request.args.get('q', '').strip()
+    filtro_especie = request.args.get('especie', '')
+
+    query = Animal.query
+    
+    if busca:
+        query = query.filter(
+            (Animal.nome.ilike(f'%{busca}%')) | 
+            (Animal.proprietario_nome.ilike(f'%{busca}%'))
+        )
+    
+    if filtro_especie:
+        query = query.filter_by(especie=filtro_especie)
+        
+    animais = query.order_by(Animal.nome).all()
+    especies = db.session.query(Animal.especie).distinct().all()
+    
+    return render_template('index.html', 
+                         animais=animais,
+                         especies=[e[0] for e in especies],
+                         busca=busca,
+                         filtro_especie=filtro_especie)
 
 
 @app.route('/animal/novo', methods=['GET', 'POST'])
