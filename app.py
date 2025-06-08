@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 from models import db, Animal, Servico, Historico
 from datetime import datetime 
 from flask import flash
 from dotenv import load_dotenv
+from flask import jsonify
 import os
 
 load_dotenv() 
@@ -111,23 +112,34 @@ def novo_servico(animal_id):
     db.session.commit()
     return redirect(url_for('ver_animal', id=animal_id))
 
+@app.route('/clear-flashes', methods=['POST'])
+def clear_flashes():
+    if '_flashes' in session:
+        session.pop('_flashes', None)
+    return jsonify({'status': 'success'}), 200
+
 @app.route('/animal/editar/<int:id>', methods=['GET', 'POST'])
 def editar_animal(id):
     animal = Animal.query.get_or_404(id)
     
     if request.method == 'POST':
         try:
+            session.pop('_flashes', None) if '_flashes' in session else None
             # Validação do Peso
             peso = float(request.form['peso'])
             if peso <= 0:
                 flash("❌ Peso deve ser maior que zero!", "danger")
                 return redirect(url_for('editar_animal', id=id))
-            
+            session.pop('_flashes', None) if '_flashes' in session else None
             # Validação do Telefone
             telefone = request.form['proprietario_telefone'].strip()
             if not validar_telefone(telefone):
-                flash("❌ Telefone inválido! Use (DD) 99999-9999", "danger")
-                return redirect(url_for('editar_animal', id=id))
+                if '_flashes' in session: 
+                    session.pop('_flashes', None)
+                flash("❌ Telefone deve conter 10 ou 11 dígitos", "danger")
+                return render_template('editar_animal.html',
+                                    animal=animal,
+                                    form_data=request.form)
             
             # Atualização dos dados
             animal.nome = request.form['nome'].strip()
@@ -142,9 +154,11 @@ def editar_animal(id):
             return redirect(url_for('ver_animal', id=id))
             
         except ValueError:
+            session.pop('_flashes', None)
             flash("❌ Valor inválido! Verifique os dados.", "danger")
-            return redirect(url_for('editar_animal', id=id))
-    
+            return render_template('editar_animal.html',
+                                animal=animal,
+                                form_data=request.form)
     return render_template('editar_animal.html', animal=animal)
 
 # ----- Inicialização Automática -----

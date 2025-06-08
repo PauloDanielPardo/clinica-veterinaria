@@ -16,17 +16,14 @@
         </div>
     </nav>
         <div class="container mt-3">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-    </div>
+            {% for category, message in get_flashed_messages(with_categories=true) | unique %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+
+        </div>
 
     <div class="container">
         
@@ -34,6 +31,16 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.addEventListener('closed.bs.alert', function() {
+                    fetch('/clear-flashes', { method: 'POST' });
+                });
+            });
+        });
+    </script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const telefoneInputs = document.querySelectorAll('input[name="proprietario_telefone"]');
