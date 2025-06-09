@@ -8,6 +8,9 @@
     
     <div class="card-body">
         <div class="row">
+            
+                
+            
             <div class="col-md-6">
                 <p><strong>Espécie:</strong> {{ animal.especie }}</p>
                 <p><strong>Raça:</strong> {{ animal.raca or 'Não informada' }}</p>
@@ -15,6 +18,7 @@
             <div class="col-md-6">
                 <p><strong>Peso:</strong> {{ animal.peso }} kg</p>
                 <p><strong>Proprietário:</strong> {{ animal.proprietario_nome }}</p>
+                <p><strong>Telefone:</strong> {{ animal.proprietario_telefone or 'Não informado' }}</p>
             </div>
         </div>
         
@@ -84,5 +88,36 @@
         <div class="alert alert-info">Nenhum serviço registrado</div>
         {% endif %}
     </div>
+    <div class="card mt-4">
+    <div class="card-header">
+        <h5>Registrar Novo Serviço</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('novo_servico', animal_id=animal.id) }}">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Tipo de Serviço*</label>
+                    <select name="servico_id" class="form-select" required>
+                        <option value="">Selecione...</option>
+                        {% for servico in servicos %}
+                        <option value="{{ servico.id }}">
+                            {{ servico.tipo }} (R$ {{ "%.2f"|format(servico.preco) }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Observações</label>
+                    <textarea name="observacoes" class="form-control" rows="1"></textarea>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Registrar Serviço
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 </div>
 {% endblock %}

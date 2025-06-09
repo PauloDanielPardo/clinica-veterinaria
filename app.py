@@ -17,7 +17,6 @@ db.init_app(app)
 # ------ Funções Auxiliares ------
 
 def formatar_telefone(telefone):
-    """Remove caracteres não numéricos e formata como (00) 00000-0000"""
     numeros = ''.join(filter(str.isdigit, telefone))
     if len(numeros) == 11:
         return f"({numeros[:2]}) {numeros[2:7]}-{numeros[7:]}"
@@ -142,7 +141,8 @@ def clear_flashes():
 @app.route('/animal/editar/<int:id>', methods=['GET', 'POST'])
 def editar_animal(id):
     animal = Animal.query.get_or_404(id)
-    
+    if '_flashes' in session:  # Limpa mensagens anteriores
+        session.pop('_flashes', None)
     if request.method == 'POST':
         try:
             session.pop('_flashes', None) if '_flashes' in session else None
@@ -158,6 +158,7 @@ def editar_animal(id):
                 if '_flashes' in session: 
                     session.pop('_flashes', None)
                 flash("❌ Telefone deve conter 10 ou 11 dígitos", "danger")
+                
                 return render_template('editar_animal.html',
                                     animal=animal,
                                     form_data=request.form)
@@ -195,5 +196,5 @@ def criar_servicos_iniciais():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-        criar_servicos_iniciais()  # Cria os serviços automaticamente
+        criar_servicos_iniciais()  
     app.run(debug=True)

@@ -1,20 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="flash-container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                {% if loop.first %}  <!-- Garante apenas uma mensagem -->
-                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-</div>
+
 <h2>Editar {{ animal.nome }}</h2>
 
 <form method="POST">
