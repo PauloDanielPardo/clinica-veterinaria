@@ -1,69 +1,88 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Histórico de {{ animal.nome }}</h2>
-    <a href="{{ url_for('index') }}" class="btn btn-secondary">Voltar</a>
-    <a href="{{ url_for('editar_animal', id=animal.id) }}" class="btn btn-warning">Editar Animal</a>
-</div>
-
 <div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Histórico de {{ animal.nome }}</h5>
+    </div>
+    
     <div class="card-body">
-        <h5 class="card-title">Informações do Animal</h5>
-        <p><strong>Espécie:</strong> {{ animal.especie }}</p>
-        <p><strong>Raça:</strong> {{ animal.raca or 'Não informada' }}</p>
-        <p><strong>Peso:</strong> {{ animal.peso }} kg</p>
-        <p><strong>Proprietário:</strong> {{ animal.proprietario_nome }}</p>
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Espécie:</strong> {{ animal.especie }}</p>
+                <p><strong>Raça:</strong> {{ animal.raca or 'Não informada' }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Peso:</strong> {{ animal.peso }} kg</p>
+                <p><strong>Proprietário:</strong> {{ animal.proprietario_nome }}</p>
+            </div>
+        </div>
+        
+        <div class="d-flex justify-content-between mt-3">
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+            
+            <div>
+                <a href="{{ url_for('editar_animal', id=animal.id) }}" 
+                   class="btn btn-warning me-2">
+                    <i class="bi bi-pencil"></i> Editar
+                </a>
+                
+                <form method="POST" action="{{ url_for('excluir_animal', id=animal.id) }}" 
+                      class="d-inline"
+                      onsubmit="return confirm('Tem certeza que deseja excluir este animal e todo seu histórico?')">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Excluir
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 
-<h4>Serviços Realizados</h4>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Data/Hora</th>
-            <th>Serviço</th>
-            <th>Preço</th>
-            <th>Observações</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for historico in historicos %}
-        <tr>
-            <td>{{ historico.data.strftime('%d/%m/%Y %H:%M') }}</td>
-            <td>
-                <span title="{{ historico.servico.descricao }}" style="cursor: help; border-bottom: 1px dotted #666;">
-                    {{ historico.servico.tipo }}
-                </span>
-            </td>
-            <td>R$ {{ "%.2f"|format(historico.servico.preco) }}</td>
-            <td>{{ historico.observacoes or '-' }}</td>
-        </tr>
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Serviços Realizados</h5>
+    </div>
+    
+    <div class="card-body">
+        {% if historicos %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Serviço</th>
+                        <th>Preço</th>
+                        <th>Observações</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for historico in historicos %}
+                    <tr>
+                        <td>{{ historico.data.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>{{ historico.servico.tipo }}</td>
+                        <td>R$ {{ "%.2f"|format(historico.servico.preco) }}</td>
+                        <td>{{ historico.observacoes or '-' }}</td>
+                        <td>
+                            <form method="POST" 
+                                  action="{{ url_for('excluir_servico', id=historico.id) }}"
+                                  onsubmit="return confirm('Excluir este serviço?')">
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         {% else %}
-        <tr>
-            <td colspan="4">Nenhum serviço registrado.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-<h4 class="mt-4">Registrar Novo Serviço</h4>
-<form method="POST" action="{{ url_for('novo_servico', animal_id=animal.id) }}">
-    <div class="mb-3">
-        <label class="form-label">Tipo de Serviço*</label>
-        <select class="form-select" name="servico_id" required>
-            <option value="">Selecione...</option>
-            {% for servico in servicos %}
-            <option value="{{ servico.id }}" title="{{ servico.descricao }}">
-                {{ servico.tipo }} (R$ {{ "%.2f"|format(servico.preco) }})
-            </option>
-            {% endfor %}
-        </select>
+        <div class="alert alert-info">Nenhum serviço registrado</div>
+        {% endif %}
     </div>
-    <div class="mb-3">
-        <label class="form-label">Observações</label>
-        <textarea class="form-control" name="observacoes" rows="2"></textarea>
-    </div>
-    <button type="submit" class="btn btn-primary">Registrar</button>
-</form>
+</div>
 {% endblock %}

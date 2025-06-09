@@ -1,56 +1,76 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Pacientes Cadastrados</h2>
-<a href="{{ url_for('novo_animal') }}" class="btn btn-success mb-3">+ Novo Animal</a>
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Pacientes Cadastrados</h5>
+        <a href="{{ url_for('novo_animal') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Novo Animal
+        </a>
+    </div>
+    
+    <div class="card-body">
+        <form method="GET" class="row g-3 mb-4">
+            <div class="col-md-6">
+                <input type="text" name="q" class="form-control" 
+                       placeholder="Buscar por nome ou proprietário..."
+                       value="{{ busca }}">
+            </div>
+            <div class="col-md-4">
+                <select name="especie" class="form-select">
+                    <option value="">Todas espécies</option>
+                    {% for esp in especies %}
+                        <option value="{{ esp }}" {% if filtro_especie == esp %}selected{% endif %}>
+                            {{ esp }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Filtrar
+                </button>
+            </div>
+        </form>
 
-<form method="GET" class="row g-3 mb-4">
-    <div class="col-md-6">
-        <input type="text" name="q" class="form-control" 
-               placeholder="Buscar por nome ou proprietário..."
-               value="{{ busca }}">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <!-- Cabeçalho da tabela -->
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Espécie</th>
+                        <th>Raça</th>
+                        <th>Peso (kg)</th>
+                        <th>Proprietário</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                
+                <!-- Corpo da tabela -->
+                <tbody>
+                    {% for animal in animais %}
+                    <tr>
+                        <td>{{ animal.nome }}</td>
+                        <td>{{ animal.especie }}</td>
+                        <td>{{ animal.raca or '-' }}</td>
+                        <td>{{ animal.peso }}</td>
+                        <td>{{ animal.proprietario_nome }}</td>
+                        <td>
+                            <a href="{{ url_for('ver_animal', id=animal.id) }}" 
+                               class="btn btn-sm btn-info">
+                                <i class="bi bi-clock-history"></i> Histórico
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">Nenhum animal cadastrado</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-    <div class="col-md-4">
-        <select name="especie" class="form-select">
-            <option value="">Todas espécies</option>
-            {% for esp in especies %}
-                <option value="{{ esp }}" {% if filtro_especie == esp %}selected{% endif %}>
-                    {{ esp }}
-                </option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="col-md-2">
-        <button type="submit" class="btn btn-primary w-100">Filtrar</button>
-    </div>
-</form>
-
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Nome</th>
-            <th>Espécie</th>
-            <th>Raça</th>
-            <th>Peso (kg)</th>
-            <th>Proprietário</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for animal in animais %}
-        <tr>
-            <td>{{ animal.nome }}</td>
-            <td>{{ animal.especie }}</td>
-            <td>{{ animal.raca or '-' }}</td>
-            <td>{{ animal.peso }}</td>
-            <td>{{ animal.proprietario_nome }}</td>
-            <td>
-                <a href="{{ url_for('ver_animal', id=animal.id) }}" class="btn btn-sm btn-info">
-                    Histórico
-                </a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+</div>
 {% endblock %}

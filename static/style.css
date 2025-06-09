@@ -1,0 +1,77 @@
+:root {
+    --ciano-primario: #00BCD4;
+    --ciano-escuro: #00838F;
+    --ciano-claro: #B2EBF2;
+    --branco: #FFFFFF;
+    --cinza-claro: #F5F5F5;
+}
+
+/* Estilos gerais */
+body {
+    background-color: var(--cinza-claro);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar {
+    background: linear-gradient(135deg, var(--ciano-primario), var(--ciano-escuro));
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    background-color: var(--ciano-primario);
+    color: white;
+    font-weight: bold;
+}
+
+/* Botões */
+.btn-primary {
+    background-color: var(--ciano-primario);
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: var(--ciano-escuro);
+}
+
+/* Formulários */
+.form-control:focus {
+    border-color: var(--ciano-primario);
+    box-shadow: 0 0 0 0.25rem rgba(0, 188, 212, 0.25);
+}
+
+/* Tabelas */
+.table {
+    background-color: var(--branco);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table thead {
+    background-color: var(--ciano-primario);
+    color: white;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+}

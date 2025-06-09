@@ -99,6 +99,27 @@ def ver_animal(id):
     historicos = Historico.query.filter_by(animal_id=id).order_by(Historico.data.desc()).all()
     return render_template('historico.html', animal=animal, servicos=servicos, historicos=historicos)
 
+@app.route('/animal/excluir/<int:id>', methods=['POST'])
+def excluir_animal(id):
+    animal = Animal.query.get_or_404(id)
+    
+    # Primeiro exclui todos os históricos associados
+    Historico.query.filter_by(animal_id=id).delete()
+    
+    db.session.delete(animal)
+    db.session.commit()
+    flash('Animal excluído com sucesso!', 'success')
+    return redirect(url_for('index'))
+
+@app.route('/servico/excluir/<int:id>', methods=['POST'])
+def excluir_servico(id):
+    servico = Historico.query.get_or_404(id)
+    animal_id = servico.animal_id
+    db.session.delete(servico)
+    db.session.commit()
+    flash('Serviço excluído do histórico!', 'success')
+    return redirect(url_for('ver_animal', id=animal_id))
+
 # ----- Rota para Serviços -----
 @app.route('/servico/novo/<int:animal_id>', methods=['POST'])
 def novo_servico(animal_id):

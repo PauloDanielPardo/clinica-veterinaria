@@ -5,63 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clínica Veterinária</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { padding: 20px; }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="/">🐾 Clínica Veterinária</a>
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-heart-pulse"></i> Clínica Vet Ciano
+            </a>
         </div>
     </nav>
-        <div class="container mt-3">
-            {% for category, message in get_flashed_messages(with_categories=true) | unique %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
 
-        </div>
-
-    <div class="container">
+    <div class="container my-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         
         {% block content %}{% endblock %}
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                alert.addEventListener('closed.bs.alert', function() {
-                    fetch('/clear-flashes', { method: 'POST' });
-                });
-            });
-        });
-    </script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const telefoneInputs = document.querySelectorAll('input[name="proprietario_telefone"]');
-        
-        telefoneInputs.forEach(input => {
-            input.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                
-                if (value.length > 11) value = value.substring(0, 11);
-                
-                if (value.length > 6) {
-                    value = value.replace(/^(\d{2})(\d{4,5})(\d{4}).*/, '($1) $2-$3');
-                } else if (value.length > 2) {
-                    value = value.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
-                }
-                
-                e.target.value = value;
-            });
-        });
-    });
-</script>
 </body>
 </html>
